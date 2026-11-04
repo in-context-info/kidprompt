@@ -58,7 +58,7 @@ Already done on the `in-context.info` Cloudflare account: the `kidprompt-db` D1 
 Secrets go up with the first deploy from two gitignored files, so neither Worker is ever live without them:
 
 1. `backend/.prod.secrets` already has a generated `SESSION_SECRET`. Add your `ANTHROPIC_API_KEY`.
-2. `admin/.prod.secrets` already has `ADMIN_EMAIL` and a generated `ADMIN_SESSION_SECRET`. Run `node admin/scripts/generate-credentials.mjs "your admin password"` and paste its `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT` lines in.
+2. `admin/.prod.secrets` already has `ADMIN_EMAIL` and a generated `ADMIN_SESSION_SECRET`. Run `node admin/scripts/set-admin-password.mjs`: it asks for the admin password (hidden, twice) and writes `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT` into that file.
 3. Merge to `main`, then from an up-to-date, clean `main`:
    ```bash
    npm run deploy:backend -- --secrets-file .prod.secrets
