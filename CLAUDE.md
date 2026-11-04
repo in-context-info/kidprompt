@@ -17,7 +17,7 @@ Guidance for Claude Code in this repo. Setup, commands and deploy steps are in `
 - `projects.html` is the working draft. `projects.published_html` is what players see, copied from `html` only when the admin approves. `status` is the review state of the draft (`draft` → `submitted` → `published` or `rejected`). Any edit to a submitted or rejected draft sends it back to `draft`.
 - A game is public if and only if `published_html IS NOT NULL`.
 - Kid-made html is untrusted. It is only ever served with the `/play` CSP (sandbox, no network). Never render it inline in the SPA, via `srcdoc`, or from any route without that header.
-- AI builds: `backend/src/lib/claude.ts`, `claude-opus-5-5` by default (override with the `CLAUDE_MODEL` var), adaptive thinking, server-side refusal fallback. The daily budget counts `token_usage` rows (successes only). Failures go to `claude_call_failures`.
+- AI builds: `backend/src/lib/claude.ts`, `claude-opus-5-5` in code, but production runs `claude-sonnet-5-5` via the `CLAUDE_MODEL` var in `backend/wrangler.jsonc` (faster, half the cost), adaptive thinking, server-side refusal fallback. The daily budget counts `token_usage` rows (successes only). Failures go to `claude_call_failures`.
 
 ## Design language
 
