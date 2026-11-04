@@ -12,7 +12,7 @@
       "binding": "DB",
       "database_name": "kidprompt-db",
       // MUST match backend/wrangler.jsonc's database_id exactly.
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "6f3dce2f-0e30-4944-b564-55deee368b33"
     }
   ],
   "vars": {

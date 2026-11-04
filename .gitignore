@@ -11,3 +11,6 @@ dist/
 .DS_Store
 *.tsbuildinfo
 
+
+# First-deploy secret files (see README "First deploy")
+.prod.secrets

@@ -53,20 +53,19 @@ scripts/smoke.sh <backend-log-file> <admin-email> <admin-password>
 
 ## First deploy
 
-Prerequisites: `kidprompt.ai` is a zone in your Cloudflare account, and you're logged in (`npx wrangler login`).
+Already done on the `in-context.info` Cloudflare account: the `kidprompt-db` D1 database (its id is in both `wrangler.jsonc` files), the schema applied remotely, and Email Sending enabled for `kidprompt.ai` with its SPF/DKIM/DMARC records live.
 
-1. Create the database and paste its id into **both** `backend/wrangler.jsonc` and `admin/wrangler.jsonc`:
+Secrets go up with the first deploy from two gitignored files, so neither Worker is ever live without them:
+
+1. `backend/.prod.secrets` already has a generated `SESSION_SECRET`. Add your `ANTHROPIC_API_KEY`.
+2. `admin/.prod.secrets` already has `ADMIN_EMAIL` and a generated `ADMIN_SESSION_SECRET`. Run `node admin/scripts/generate-credentials.mjs "your admin password"` and paste its `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT` lines in.
+3. Merge to `main`, then from an up-to-date, clean `main`:
    ```bash
-   cd backend && npx wrangler d1 create kidprompt-db
+   npm run deploy:backend -- --secrets-file .prod.secrets
+   npm run deploy:admin -- --secrets-file .prod.secrets
    ```
-2. Apply the schema: `npm run db:remote`
-3. Turn on email sending for signup codes: `cd backend && npx wrangler email sending enable kidprompt.ai`, then add the SPF/DKIM DNS records it prints (`npx wrangler email sending dns get kidprompt.ai`).
-4. Backend secrets (from `backend/`): `npx wrangler secret put SESSION_SECRET` (a long random string) and `npx wrangler secret put ANTHROPIC_API_KEY`.
-5. Admin secrets (from `admin/`): `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `ADMIN_PASSWORD_SALT` (one run of `generate-credentials.mjs`), `ADMIN_SESSION_SECRET`.
-6. From an up-to-date, clean `main`:
-   ```bash
-   npm run deploy:backend   # rebuilds frontend/dist first
-   npm run deploy:admin
-   ```
+   Later deploys are just `npm run deploy:backend` and `npm run deploy:admin`, since secrets persist across deploys. To rotate one: `npx wrangler secret put <NAME>` from that workspace.
+
+Schema changes: `npm run db:remote` (idempotent).
 
 Deploys refuse to run from anything but a clean `main` that matches `origin/main` (`scripts/require-main.mjs`). For an emergency, put `ALLOW_NON_MAIN_DEPLOY="<reason>"` inline on the one command.
