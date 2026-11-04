@@ -61,10 +61,10 @@ Secrets go up with the first deploy from two gitignored files, so neither Worker
 2. `admin/.prod.secrets` already has `ADMIN_EMAIL` and a generated `ADMIN_SESSION_SECRET`. Run `node admin/scripts/set-admin-password.mjs`: it asks for the admin password (hidden, twice) and writes `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT` into that file.
 3. Merge to `main`, then from an up-to-date, clean `main`:
    ```bash
-   npm run deploy:backend -- --secrets-file .prod.secrets
-   npm run deploy:admin -- --secrets-file .prod.secrets
+   npm run deploy --workspace backend -- --secrets-file .prod.secrets
+   npm run deploy --workspace admin -- --secrets-file .prod.secrets
    ```
-   Later deploys are just `npm run deploy:backend` and `npm run deploy:admin`, since secrets persist across deploys. To rotate one: `npx wrangler secret put <NAME>` from that workspace.
+   (Go through `--workspace` here: the root `deploy:*` scripts drop a `--secrets-file` passed after `--`.) Leave no empty `NAME=` lines in a secrets file. Later deploys are just `npm run deploy:backend` and `npm run deploy:admin`, since secrets persist across deploys. To rotate one: `npx wrangler secret put <NAME>` from that workspace.
 
 Schema changes: `npm run db:remote` (idempotent).
 
