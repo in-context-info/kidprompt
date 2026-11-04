@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kidprompt-admin",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-05",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kidprompt-db",
+      // MUST match backend/wrangler.jsonc's database_id exactly.
+      "database_id": "6f3dce2f-0e30-4944-b564-55deee368b33"
+    }
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://kidprompt.ai"
+  },
+  "dev": {
+    "port": 8789
+  },
+  "routes": [
+    { "pattern": "admin.kidprompt.ai", "custom_domain": true }
+  ]
+}
