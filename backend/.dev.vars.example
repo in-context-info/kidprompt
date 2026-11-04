@@ -1,0 +1,5 @@
+# Copy to .dev.vars (gitignored) for `npm run dev:backend`.
+SESSION_SECRET=change-me-to-a-long-random-string
+ANTHROPIC_API_KEY=sk-ant-...
+# Local dev only: print signup codes to the console instead of emailing them.
+DEV_LOG_CODES=true

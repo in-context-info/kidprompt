@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --persist-to ../.wrangler/shared-state",
+    "predeploy": "node ../scripts/require-main.mjs \"deploy backend\" && npm --prefix .. run build:frontend",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute kidprompt-db --local --persist-to ../.wrangler/shared-state --file=./schema.sql",
+    "db:remote": "wrangler d1 execute kidprompt-db --remote --file=./schema.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "@hono/zod-validator": "^0.8.0",
+    "hono": "^4.13.7",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260705.1",
+    "@types/node": "^26.1.0",
+    "typescript": "^6.0.3",
+    "wrangler": "~4.114.0"
+  }
+}

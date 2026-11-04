@@ -1,0 +1,7 @@
+# Copy to .dev.vars (gitignored). Generate the hash/salt pair with:
+#   node admin/scripts/generate-credentials.mjs "a password"
+ADMIN_EMAIL=you@example.com
+ADMIN_PASSWORD_HASH=
+ADMIN_PASSWORD_SALT=
+ADMIN_SESSION_SECRET=change-me-to-a-long-random-string
+PUBLIC_ORIGIN=http://localhost:5173

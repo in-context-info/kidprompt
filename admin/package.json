@@ -1,0 +1,21 @@
+{
+  "name": "admin",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --persist-to ../.wrangler/shared-state --inspector-port 9230",
+    "predeploy": "node ../scripts/require-main.mjs \"deploy admin\"",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute kidprompt-db --local --persist-to ../.wrangler/shared-state --file=../backend/schema.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.13.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260705.1",
+    "typescript": "^6.0.3",
+    "wrangler": "~4.114.0"
+  }
+}

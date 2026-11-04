@@ -1,0 +1,22 @@
+{
+  "name": "kidprompt",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "admin"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:admin": "npm run dev --workspace admin",
+    "build:frontend": "npm run build --workspace frontend",
+    "deploy:backend": "npm run deploy --workspace backend",
+    "deploy:admin": "npm run deploy --workspace admin",
+    "db:local": "npm run db:local --workspace backend",
+    "db:remote": "npm run db:remote --workspace backend",
+    "typecheck": "npm run typecheck --workspace frontend && npm run typecheck --workspace backend && npm run typecheck --workspace admin",
+    "verify": "npm run typecheck"
+  }
+}
