@@ -4,7 +4,7 @@ import { randomId, slugFor } from "./ids";
 
 // "Try it" without an account. A guest is a random id in an HMAC-signed
 // cookie — nothing about the person. Three limits keep anonymous AI spend
-// bounded: builds per guest, guest builds per IP per 24h (an HMAC of the IP,
+// bounded: builds per guest (one by default), guest builds per IP per 24h (an HMAC of the IP,
 // never the raw address, so clearing cookies doesn't reset it), and all guest
 // builds per 24h, which is the hard ceiling on what strangers can cost.
 
@@ -61,7 +61,7 @@ export async function guestProject(env: Env, guestId: string): Promise<GuestProj
 }
 
 export function guestBuildLimit(env: Env): number {
-  return Number(env.GUEST_BUILD_LIMIT) || 3;
+  return Number(env.GUEST_BUILD_LIMIT) || 1;
 }
 
 export async function guestBuildsUsed(env: Env, guestId: string): Promise<number> {
@@ -85,13 +85,13 @@ export async function guestBlockReason(env: Env, guestId: string, ip: string): P
     ).bind(ip, since),
     env.DB.prepare("SELECT COUNT(*) AS n FROM token_usage WHERE email LIKE 'guest:%' AND created_at > ?").bind(since),
   ]);
-  if ((perIp.results[0]?.n ?? 0) >= (Number(env.GUEST_IP_DAILY_LIMIT) || 6)) return "ip_limit";
+  if ((perIp.results[0]?.n ?? 0) >= (Number(env.GUEST_IP_DAILY_LIMIT) || 3)) return "ip_limit";
   if ((global.results[0]?.n ?? 0) >= (Number(env.GUEST_GLOBAL_DAILY_LIMIT) || 60)) return "global_limit";
   return null;
 }
 
 export const GUEST_BLOCK_MESSAGES: Record<GuestBlock, string> = {
-  guest_limit: "That's all the free tries! Make a free family account to keep building.",
+  guest_limit: "That was your free try! Make a free family account to keep changing it.",
   ip_limit: "That's all the free tries for today. Make a free family account to keep building.",
   global_limit: "Lots of kids are trying KidPrompt today! Make a free family account to keep building.",
 };

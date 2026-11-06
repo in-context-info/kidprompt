@@ -11,7 +11,7 @@ const SECTIONS = [
   },
   {
     title: "Trying it without an account",
-    body: "Anyone can build one game with a few free tries before making an account. We keep that game, the words typed to make it, and a random id in a cookie so it can be saved later, plus a scrambled (hashed) form of the network address to limit free tries. Nothing else. Making an account saves the game to it, and only then can it be shared.",
+    body: "Anyone can build one game, once, before making an account. We keep that game, the words typed to make it, and a random id in a cookie so it can be saved later, plus a scrambled (hashed) form of the network address to limit free builds. Nothing else. Making an account saves the game to it, and only then can it be shared.",
   },
   {
     title: "Every game is reviewed",

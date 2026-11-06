@@ -3,8 +3,8 @@ import { api, ApiError } from "../api";
 import { Link } from "../router";
 import { C, FONT_DISPLAY, button, card, input } from "../theme";
 
-// "Try it" without an account: one game, a few builds, then a nudge to make a
-// free family account to save and share it. Signing up or logging in moves
+// "Try it" without an account: one free build, then a free family account is
+// needed to change it again, save it, or share it. Signing up or logging in moves
 // this game into the account (backend lib/guest.ts claimGuestProject).
 
 const STARTERS = [
@@ -96,9 +96,7 @@ export function TryIt() {
         <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 30, margin: 0, flex: "1 1 260px" }}>
           🎮 {state.project?.title ?? "Try it — no account needed"}
         </h1>
-        <span style={{ color: C.sub, fontWeight: 600 }}>
-          {state.buildsLeft} free {state.buildsLeft === 1 ? "try" : "tries"} left
-        </span>
+        {!hasGame && <span style={{ color: C.sub, fontWeight: 600 }}>1 free build, no account needed</span>}
         <Link to="/signup" style={button(hasGame ? "primary" : "ghost")}>
           {hasGame ? "💾 Save & share it" : "Make a family account"}
         </Link>
@@ -121,8 +119,8 @@ export function TryIt() {
           <div style={{ flex: "1 1 280px", lineHeight: 1.45 }}>
             {needsAccount ? (
               <>
-                <b>That's all the free tries!</b> Make a free family account to save this game, keep changing it, and share it
-                with family and friends.
+                <b>That was your free build!</b> To change it, save it, and share it with family and friends, a grown-up can make a
+                free family account. This game comes with you.
               </>
             ) : (
               <>
@@ -206,15 +204,21 @@ export function TryIt() {
                 }
               }}
               disabled={needsAccount}
-              placeholder={needsAccount ? "Make a free account to keep building" : hasGame ? "What should change? e.g. make the cat purple" : "Describe your game or app…"}
+              placeholder={needsAccount ? "Make a free account to keep changing it" : hasGame ? "What should change? e.g. make the cat purple" : "Describe your game or app…"}
               rows={3}
               maxLength={2000}
               style={{ ...input, resize: "none" }}
             />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button type="submit" disabled={building || needsAccount || !prompt.trim()} style={button("primary")}>
-                {building ? "Building…" : hasGame ? "Change it ✨" : "Build it ✨"}
-              </button>
+              {needsAccount ? (
+                <Link to="/signup" style={button("primary")}>
+                  Make a free account to keep going
+                </Link>
+              ) : (
+                <button type="submit" disabled={building || !prompt.trim()} style={button("primary")}>
+                  {building ? "Building…" : hasGame ? "Change it ✨" : "Build it ✨"}
+                </button>
+              )}
             </div>
           </form>
         </section>
