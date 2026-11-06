@@ -1,36 +1,9 @@
 import { Hono } from "hono";
 import type { Env } from "../env";
 import { escapeHtml, nav, page, when } from "../lib/layout";
+import { costUsd, PREVIEW_CSP } from "../lib/shared";
 
 export const review = new Hono<{ Bindings: Env }>();
-
-// Same sandbox the public /play route uses (backend/src/routes/play.ts) —
-// duplicated rather than shared, like everything across the Worker boundary.
-// Keep the two in step.
-const PREVIEW_CSP = [
-  "sandbox allow-scripts allow-pointer-lock allow-modals",
-  "default-src 'none'",
-  "script-src 'unsafe-inline' 'unsafe-eval'",
-  "style-src 'unsafe-inline'",
-  "img-src data: blob:",
-  "media-src data: blob:",
-  "font-src data:",
-  "connect-src 'none'",
-  "form-action 'none'",
-  "base-uri 'none'",
-].join("; ");
-
-// $ per million tokens, keyed by the exact model string token_usage records.
-// Unknown models price at the Opus rate so a new model never reads as free.
-const PRICING: Record<string, { input: number; output: number }> = {
-  "claude-opus-5-5": { input: 4, output: 20 },
-  "claude-sonnet-5-5": { input: 2, output: 10 },
-  "claude-haiku-5-5": { input: 0.1, output: 0.5 },
-};
-function costUsd(model: string, input: number, output: number): number {
-  const rate = PRICING[model] ?? PRICING["claude-opus-5-5"];
-  return (input * rate.input + output * rate.output) / 1_000_000;
-}
 
 interface QueueRow {
   id: string;
@@ -59,7 +32,8 @@ review.get("/", async (c) => {
     c.env.DB.prepare("SELECT COUNT(*) AS n FROM projects"),
     c.env.DB.prepare("SELECT COUNT(*) AS n FROM projects WHERE published_html IS NOT NULL"),
     c.env.DB.prepare("SELECT COALESCE(SUM(plays), 0) AS n FROM projects"),
-    c.env.DB.prepare("SELECT COUNT(*) AS n FROM token_usage WHERE created_at > ?").bind(Date.now() - 86_400_000),
+    c.env.DB.prepare("SELECT COUNT(*) AS n FROM token_usage WHERE email NOT LIKE 'guest:%' AND created_at > ?").bind(Date.now() - 86_400_000),
+    c.env.DB.prepare("SELECT COUNT(*) AS n FROM token_usage WHERE email LIKE 'guest:%' AND created_at > ?").bind(Date.now() - 86_400_000),
   ]);
   const n = (i: number) => (stats[i].results[0] as { n: number }).n;
 
@@ -86,7 +60,8 @@ review.get("/", async (c) => {
           ["Projects", n(2)],
           ["Live games", n(3)],
           ["Total plays", n(4)],
-          ["AI builds (24h)", n(5)],
+          ["Family builds (24h)", n(5)],
+          ["Guest builds (24h)", n(6)],
         ]
           .map(([label, value]) => `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`)
           .join("")}
@@ -309,7 +284,7 @@ review.get("/families", async (c) => {
       "Families",
       `${nav("families")}
       <div class="card"><div class="stat-grid">
-        <div class="stat"><div class="label">AI cost, last 30 days (est.)</div><div class="value">$${totalCost.toFixed(2)}</div></div>
+        <div class="stat"><div class="label">AI cost, last 30 days (est., incl. guests)</div><div class="value">$${totalCost.toFixed(2)}</div></div>
         <div class="stat"><div class="label">Failed builds, 30 days</div><div class="value">${failures.results.reduce((s, f) => s + f.n, 0)}</div>
           <div class="muted">${failures.results.map((f) => `${escapeHtml(f.reason)}: ${f.n}`).join(" · ")}</div></div>
       </div></div>

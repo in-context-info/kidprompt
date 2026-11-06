@@ -18,12 +18,12 @@ export function Header({ me, onLoggedOut }: { me: Me | null | undefined; onLogge
     >
       <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <img src="/favicon.svg" alt="" width={34} height={34} />
-        <span style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: C.ink }}>
+        <span className="kp-brand-text" style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 24, color: C.ink }}>
           Kid<span style={{ color: C.coral }}>Prompt</span>
         </span>
       </Link>
-      <nav style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Link to="/" style={{ padding: "8px 12px", fontWeight: 600, color: C.sub }}>
+      <nav className="kp-nav" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Link to="/" className="kp-nav-play" style={{ padding: "8px 12px", fontWeight: 600, color: C.sub }}>
           Play
         </Link>
         {me ? (
@@ -47,8 +47,8 @@ export function Header({ me, onLoggedOut }: { me: Me | null | undefined; onLogge
             <Link to="/login" style={{ padding: "8px 12px", fontWeight: 600, color: C.sub }}>
               Log in
             </Link>
-            <Link to="/signup" style={{ ...button("primary"), display: "inline-block" }}>
-              Start creating
+            <Link to="/try" style={{ ...button("primary"), display: "inline-block" }}>
+              Try it free
             </Link>
           </>
         ) : null}

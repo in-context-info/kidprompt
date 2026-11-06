@@ -60,6 +60,20 @@ export function extractHtml(text: string): { html: string; message: string } | n
 }
 
 export async function buildProject(env: Env, input: BuildInput): Promise<BuildResult> {
+  // Local dev only (backend/.dev.vars): a canned game instead of a Claude call,
+  // so build flows can be clicked through without an API key or spend.
+  if (env.DEV_FAKE_BUILDS === "true") {
+    const safe = input.prompt.replace(/[<>&]/g, "");
+    return {
+      ok: true,
+      html: `<!doctype html><html><body style="font-family:sans-serif;text-align:center;padding:40px"><h1>${safe}</h1><p>Fake build ${input.recentPrompts.length + 1}</p></body></html>`,
+      message: "Here's a pretend build (DEV_FAKE_BUILDS is on).",
+      model: "dev-fake",
+      inputTokens: 0,
+      outputTokens: 0,
+      durationMs: 0,
+    };
+  }
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
   const model = env.CLAUDE_MODEL || DEFAULT_MODEL;
 

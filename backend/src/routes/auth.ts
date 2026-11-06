@@ -21,6 +21,7 @@ import {
   sendCodeEmail,
 } from "../lib/email";
 import { buildsLeftToday } from "../lib/budget";
+import { claimGuestProject, clearGuestCookieHeader } from "../lib/guest";
 import { LoginRequest, SignupConfirmRequest, SignupRequest } from "../contracts/auth.contract";
 
 export const auth = new Hono<{ Bindings: Env }>();
@@ -50,6 +51,13 @@ export async function requireSession(c: Context<{ Bindings: Env }>): Promise<str
   if (!user || user.status !== "active") return null;
   if (user.password_changed_at && session.issuedAt < user.password_changed_at) return null;
   return session.email;
+}
+
+// A "Try it" game made before signing up or logging in moves into the account.
+async function claimGuest(c: Context<{ Bindings: Env }>, email: string): Promise<{ claimedProjectId?: string }> {
+  const claimedProjectId = await claimGuestProject(c.env, c.req.raw, email);
+  c.header("Set-Cookie", clearGuestCookieHeader, { append: true });
+  return claimedProjectId ? { claimedProjectId } : {};
 }
 
 auth.post("/signup", zValidator("json", SignupRequest, badBody), async (c) => {
@@ -120,7 +128,7 @@ auth.post("/signup/confirm", zValidator("json", SignupConfirmRequest, badBody), 
 
   const token = await createSessionToken(email, c.env.SESSION_SECRET);
   c.header("Set-Cookie", sessionCookieHeader(token));
-  return c.json({ ok: true });
+  return c.json({ ok: true, ...(await claimGuest(c, email)) });
 });
 
 auth.post("/login", zValidator("json", LoginRequest, badBody), async (c) => {
@@ -136,7 +144,7 @@ auth.post("/login", zValidator("json", LoginRequest, badBody), async (c) => {
 
   const token = await createSessionToken(email, c.env.SESSION_SECRET);
   c.header("Set-Cookie", sessionCookieHeader(token));
-  return c.json({ ok: true });
+  return c.json({ ok: true, ...(await claimGuest(c, email)) });
 });
 
 auth.post("/logout", (c) => {

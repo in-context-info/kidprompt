@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../env";
 import { requireSession } from "./auth";
+import { guestProject, readGuestId } from "../lib/guest";
 
 export const play = new Hono<{ Bindings: Env }>();
 
@@ -45,6 +46,13 @@ play.get("/draft/:id", async (c) => {
   const row = await c.env.DB.prepare("SELECT html FROM projects WHERE id = ? AND owner_email = ?")
     .bind(c.req.param("id"), email)
     .first<{ html: string }>();
+  return htmlResponse(row?.html || NOT_FOUND, "no-store");
+});
+
+// The guest's own "Try it" game, found by their signed cookie.
+play.get("/guest/current", async (c) => {
+  const guestId = await readGuestId(c.env, c.req.raw);
+  const row = guestId ? await guestProject(c.env, guestId) : null;
   return htmlResponse(row?.html || NOT_FOUND, "no-store");
 });
 

@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "./env";
 import { auth, requireAdminSession } from "./routes/auth";
 import { review } from "./routes/review";
+import { guests } from "./routes/guests";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -26,5 +27,6 @@ app.use("*", async (c, next) => {
 });
 
 app.route("/", review);
+app.route("/", guests);
 
 export default app;

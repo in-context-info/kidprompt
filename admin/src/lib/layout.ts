@@ -59,12 +59,12 @@ export function page(title: string, body: string): string {
 </html>`;
 }
 
-export function nav(active: "review" | "live" | "families"): string {
+export function nav(active: "review" | "live" | "families" | "guests"): string {
   const link = (key: typeof active, href: string, label: string) =>
     `<a href="${href}" class="${key === active ? "active" : ""}">${label}</a>`;
   return `<div class="topbar"><h1>KidPrompt Admin</h1>
     <form method="POST" action="/logout"><button class="ghost" type="submit">Log out</button></form></div>
-    <div class="nav">${link("review", "/", "Review queue")}${link("live", "/live", "Live games")}${link("families", "/families", "Families & usage")}</div>`;
+    <div class="nav">${link("review", "/", "Review queue")}${link("live", "/live", "Live games")}${link("families", "/families", "Families & usage")}${link("guests", "/guests", "Guests (try it)")}</div>`;
 }
 
 export function when(ms: number | null): string {
