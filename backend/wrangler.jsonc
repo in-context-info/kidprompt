@@ -25,7 +25,10 @@
   ],
   "vars": {
     // Daily AI builds per grown-up account (all their kids together).
-    "DAILY_BUILD_LIMIT": "25"
+    "DAILY_BUILD_LIMIT": "25",
+    // Build model. Sonnet 5.5 for speed and half the cost of the code default
+    // (claude-opus-5-5 in src/lib/claude.ts). Delete this line to go back to Opus.
+    "CLAUDE_MODEL": "claude-sonnet-5-5"
   },
   "assets": {
     "directory": "../frontend/dist",
