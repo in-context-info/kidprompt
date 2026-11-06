@@ -38,8 +38,8 @@ export function Home({ me }: { me: Me | null | undefined }) {
           loop the whole time.
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link to={me ? "/studio" : "/signup"} style={{ ...button("primary"), padding: "14px 26px", fontSize: 17 }}>
-            {me ? "Go to my studio" : "Start creating — free"}
+          <Link to={me ? "/studio" : "/try"} style={{ ...button("primary"), padding: "14px 26px", fontSize: 17 }}>
+            {me ? "Go to my studio" : "Try it now — no account needed"}
           </Link>
           <a href="#gallery" style={{ ...button("ghost"), padding: "14px 26px", fontSize: 17, textDecoration: "none" }}>
             Play kids' games

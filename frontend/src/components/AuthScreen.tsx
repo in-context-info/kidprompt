@@ -27,23 +27,22 @@ export function AuthScreen({ mode, onAuthed }: { mode: "login" | "signup"; onAut
     }
   };
 
-  const finish = async () => {
+  // A "Try it" game made before signing in comes along: open it.
+  const finish = async (res: { claimedProjectId?: string }) => {
     await onAuthed();
-    navigate("/studio");
+    navigate(res.claimedProjectId ? `/studio/${res.claimedProjectId}` : "/studio");
   };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     run(async () => {
       if (mode === "login") {
-        await api("login", { method: "POST", body: { email, password } });
-        await finish();
+        await finish(await api<{ claimedProjectId?: string }>("login", { method: "POST", body: { email, password } }));
       } else if (step === "form") {
         await api("signup", { method: "POST", body: { name, email, password } });
         setStep("code");
       } else {
-        await api("signup/confirm", { method: "POST", body: { email, code } });
-        await finish();
+        await finish(await api<{ claimedProjectId?: string }>("signup/confirm", { method: "POST", body: { email, code } }));
       }
     });
   };

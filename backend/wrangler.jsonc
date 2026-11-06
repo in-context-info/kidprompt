@@ -28,7 +28,14 @@
     "DAILY_BUILD_LIMIT": "25",
     // Build model. Sonnet 5.5 for speed and half the cost of the code default
     // (claude-opus-5-5 in src/lib/claude.ts). Delete this line to go back to Opus.
-    "CLAUDE_MODEL": "claude-sonnet-5-5"
+    "CLAUDE_MODEL": "claude-sonnet-5-5",
+    // "Try it" without an account (src/lib/guest.ts): one free build per guest,
+    // then an account is needed for more. Also guest builds per IP per 24h
+    // (a few devices on one home network) and all guest builds per 24h (the
+    // cost ceiling: about $0.10 each on Sonnet 5.5).
+    "GUEST_BUILD_LIMIT": "1",
+    "GUEST_IP_DAILY_LIMIT": "3",
+    "GUEST_GLOBAL_DAILY_LIMIT": "60"
   },
   "assets": {
     "directory": "../frontend/dist",

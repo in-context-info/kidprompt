@@ -10,6 +10,10 @@ const SECTIONS = [
     body: "Only adults sign up, with an email and password. Kids are added as creators with just a nickname and an emoji. We never ask a kid for their name, email, school, age, or photo.",
   },
   {
+    title: "Trying it without an account",
+    body: "Anyone can build one game, once, before making an account. We keep that game, the words typed to make it, and a random id in a cookie so it can be saved later, plus a scrambled (hashed) form of the network address to limit free builds. Nothing else. Making an account saves the game to it, and only then can it be shared.",
+  },
+  {
     title: "Every game is reviewed",
     body: "Nothing goes public automatically. When a family presses “Share it”, the KidPrompt grown-up looks at the game before it appears in the Arcade. Changes to a live game are reviewed again before they go live.",
   },

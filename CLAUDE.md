@@ -17,6 +17,8 @@ Guidance for Claude Code in this repo. Setup, commands and deploy steps are in `
 - `projects.html` is the working draft. `projects.published_html` is what players see, copied from `html` only when the admin approves. `status` is the review state of the draft (`draft` → `submitted` → `published` or `rejected`). Any edit to a submitted or rejected draft sends it back to `draft`.
 - A game is public if and only if `published_html IS NOT NULL`.
 - Kid-made html is untrusted. It is only ever served with the `/play` CSP (sandbox, no network). Never render it inline in the SPA, via `srcdoc`, or from any route without that header.
+- "Try it" without an account (`backend/src/lib/guest.ts`, `routes/guest.ts`, `frontend/src/components/TryIt.tsx`): a guest is a random id in an HMAC-signed `guest` cookie. One `guest_projects` row per guest, builds recorded in `token_usage` as `email = 'guest:<id>'`. Three limits from `wrangler.jsonc` vars, counting successful builds only: per guest, per IP-hash per 24h (never store a raw IP), and all guests per 24h (the spend ceiling). Turn-aways go to `guest_blocks`. Signup confirm and login call `claimGuestProject`, which copies the game and its versions into `projects` and sets `claimed_*`. Guest games are never public: only a claimed project can be submitted. The admin `/guests` page reads all of this.
+- `DEV_FAKE_BUILDS=true` in `backend/.dev.vars` returns a canned game instead of calling Claude, for local testing. Never set it in production.
 - AI builds: `backend/src/lib/claude.ts`, `claude-opus-5-5` in code, but production runs `claude-sonnet-5-5` via the `CLAUDE_MODEL` var in `backend/wrangler.jsonc` (faster, half the cost), adaptive thinking, server-side refusal fallback. The daily budget counts `token_usage` rows (successes only). Failures go to `claude_call_failures`.
 
 ## Design language
@@ -25,6 +27,6 @@ Same as Echolify: Fraunces (display) + Figtree (body) from Google Fonts, inline 
 
 ## Verify
 
-`npm run verify` (typecheck for all workspaces) and `scripts/smoke.sh` against local dev servers. `@cloudflare/vitest-pool-workers` currently fails to install in this workspace with npm 10.9 (`Cannot read properties of null (reading 'edgesOut')`), which is why there's no vitest suite yet.
+`npm run verify` (typecheck for all workspaces), and `scripts/smoke.sh` plus `scripts/smoke-guest.sh` against local dev servers (fresh local DB for the guest one, since its per-network limit carries over). `@cloudflare/vitest-pool-workers` currently fails to install in this workspace with npm 10.9 (`Cannot read properties of null (reading 'edgesOut')`), which is why there's no vitest suite yet.
 
 Never deploy before merge: deploy only from a clean, up-to-date `main`.

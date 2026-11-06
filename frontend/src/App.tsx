@@ -8,6 +8,7 @@ import { AuthScreen } from "./components/AuthScreen";
 import { Studio } from "./components/Studio";
 import { Editor } from "./components/Editor";
 import { About } from "./components/About";
+import { TryIt } from "./components/TryIt";
 
 export function App() {
   const path = usePath();
@@ -31,6 +32,7 @@ export function App() {
   else if (path === "/login" || path === "/signup")
     screen = <AuthScreen mode={path === "/signup" ? "signup" : "login"} onAuthed={refreshMe} />;
   else if (path === "/about") screen = <About />;
+  else if (path === "/try") screen = me ? <Studio me={me} onMeChange={refreshMe} /> : me === null ? <TryIt /> : null;
   else if (path === "/studio" || path.startsWith("/studio/")) {
     if (me === undefined) screen = null;
     else if (me === null) screen = <AuthScreen mode="login" onAuthed={refreshMe} />;

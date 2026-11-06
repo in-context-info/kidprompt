@@ -6,12 +6,14 @@ import { creators } from "./routes/creators";
 import { projects } from "./routes/projects";
 import { publicRoutes } from "./routes/public";
 import { play } from "./routes/play";
+import { guest } from "./routes/guest";
 
 const api = new Hono<{ Bindings: Env }>().basePath("/api");
 api.route("/", auth);
 api.route("/", creators);
 api.route("/", projects);
 api.route("/", publicRoutes);
+api.route("/", guest);
 
 // Malformed JSON throws before any zod hook runs — normalize it to the API's
 // {error} shape. Everything else is logged and answered as a JSON 500 rather

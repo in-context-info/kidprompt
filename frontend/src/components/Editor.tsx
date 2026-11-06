@@ -164,6 +164,12 @@ export function Editor({ id, me, onMeChange }: { id: string; me: Me; onMeChange:
         </button>
       </div>
 
+      {me.creators.length === 0 && (
+        <div style={{ ...card, padding: 14, marginBottom: 14, background: "#EEF7FF", borderColor: "#CDE6FB" }}>
+          👋 Welcome! To share this game, first <Link to="/studio" style={{ color: C.sky, fontWeight: 700 }}>add your kid in the Studio</Link>, then
+          pick them under “Who made it?”.
+        </div>
+      )}
       {project.status === "rejected" && project.reviewNote && (
         <div style={{ ...card, padding: 14, marginBottom: 14, borderColor: "#F5C2BE", background: "#FFF4F3" }}>
           <b>Reviewer note:</b> {project.reviewNote}

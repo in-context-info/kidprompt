@@ -82,7 +82,8 @@ CREATE TABLE IF NOT EXISTS project_versions (
 CREATE INDEX IF NOT EXISTS idx_versions_project ON project_versions(project_id, id);
 
 -- One row per successful Claude call — the daily build budget counts these,
--- and the admin portal prices them.
+-- and the admin portal prices them. Guest builds use email 'guest:<guest_id>'
+-- and project_id = guest_projects.id.
 CREATE TABLE IF NOT EXISTS token_usage (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL,
@@ -104,3 +105,35 @@ CREATE TABLE IF NOT EXISTS claude_call_failures (
   reason TEXT NOT NULL,
   created_at INTEGER NOT NULL
 );
+
+-- "Try it" without an account. A guest is a random id in a signed cookie, not
+-- a person: no email, no name. The raw IP is never stored, only an HMAC of it
+-- (ip_hash) so the per-IP daily limit survives a cleared cookie.
+-- versions is a JSON array of {prompt, html, createdAt}, one per build.
+-- When the guest signs up or logs in, the game is copied into projects for
+-- that account and claimed_* records the conversion (the admin funnel).
+CREATE TABLE IF NOT EXISTS guest_projects (
+  id TEXT PRIMARY KEY,
+  guest_id TEXT NOT NULL UNIQUE,
+  ip_hash TEXT NOT NULL,
+  title TEXT NOT NULL DEFAULT 'My first game',
+  html TEXT NOT NULL DEFAULT '',
+  versions TEXT NOT NULL DEFAULT '[]',
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  claimed_by_email TEXT,
+  claimed_project_id TEXT,
+  claimed_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_guest_projects_created ON guest_projects(created_at);
+
+-- Every guest build turned away by a limit, captured at the event so the admin
+-- can see when the trial limits are too tight (or under attack).
+-- reason: guest_limit | ip_limit | global_limit
+CREATE TABLE IF NOT EXISTS guest_blocks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  reason TEXT NOT NULL,
+  ip_hash TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_guest_blocks_created ON guest_blocks(created_at);
